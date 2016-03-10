@@ -23,7 +23,7 @@ class main:
         startWindowThread()
         self.image_sub = rp.Subscriber("/camera/rgb/image_color",
                                           Image, self.returnImage)
-        self.pub = rp.Publisher("turtlebot_1/cmd_vel", Twist, queue_size = 1)                    
+        self.pub = rp.Publisher("/cmd_vel", Twist, queue_size = 1)                    
         
     def returnImage(self, data):
         try:
@@ -31,29 +31,13 @@ class main:
         except CvBridgeError, e:
             print e
 
-        #segmentation of the green channel - so green box can be segmented from the environment
-        bgr_thresh = cv2.inRange(cv_image,
-                                 np.array((0, 0, 0)),
-                                 np.array((0, 255, 0)))
-
         hsv_img = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
         hsv_thresh = cv2.inRange(hsv_img,
-                                 np.array((25, 50, 10)),
-                                 np.array((100, 255, 255)))
-
-        bgr_contours, hierachy = cv2.findContours(bgr_thresh.copy(),
-                                                  cv2.RETR_TREE,
-                                                  cv2.CHAIN_APPROX_SIMPLE)
-
-        hsv_contours, hierachy = cv2.findContours(hsv_thresh.copy(),
-                                                  cv2.RETR_TREE,
-                                                  cv2.CHAIN_APPROX_SIMPLE)
-        #for c in hsv_contours:
-            #a = cv2.contourArea(c)
-            #if a > 100.0:
-                #cv2.drawContours(cv_image, c, -1, (255, 0, 0))
-        cv2.imshow("Camera Image", cv_image)
+                                 np.array((50, 60, 60)),
+                                 np.array((100, 255, 215)))
         segImg = cv2.bitwise_and(hsv_img,hsv_img,mask = hsv_thresh)
+        segImg2 = cv2.bitwise_and(cv_image,cv_image,mask = hsv_thresh)
+        cv2.imshow("Camera Image", segImg)
         imageleft, imageright = np.hsplit(segImg, 2)
         #cv2.imshow("left", imageleft) #debug images
         #cv2.imshow("right", imageright) #debug images
