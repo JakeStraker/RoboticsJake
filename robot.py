@@ -37,7 +37,7 @@ class main:
                                  np.array((100, 255, 215)))
         segImg = cv2.bitwise_and(hsv_img,hsv_img,mask = hsv_thresh)
         segImg2 = cv2.bitwise_and(cv_image,cv_image,mask = hsv_thresh)
-        cv2.imshow("Camera Image", segImg)
+        cv2.imshow("Camera Image", segImg2)
         imageleft, imageright = np.hsplit(segImg, 2)
         #cv2.imshow("left", imageleft) #debug images
         #cv2.imshow("right", imageright) #debug images

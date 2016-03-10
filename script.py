@@ -1,12 +1,11 @@
 import cv2
-import numpy as np #library for mathematical functions
+import numpy as np #matrix/image manipulation library
 import rospy as rp
 from cv2 import namedWindow
 from cv2 import destroyAllWindows, startWindowThread
 from numpy import mean
-from sensor_msgs.msg import Image
-from sensor_msgs.msg import LaserScan
-from cv_bridge import CvBridge, CvBridgeError #conversion of ROS data to OpenCV format
+from sensor_msgs.msg import Image, LaserScan
+from cv_bridge import CvBridge, CvBridgeError #bridging library for raw data to opencv
 from geometry_msgs.msg import Twist
 
 class persistence:
@@ -46,7 +45,7 @@ class main:
 
             
     def send_velocities(self, left, right):
-        r = rp.Rate(20) #set frequency of commands
+        r = rp.Rate(20) #command rate
         #rp.loginfo("Sending commands")
         twist_msg = Twist()
         if (self.scan > 1):
@@ -78,7 +77,7 @@ class main:
         self.pub.publish(twist_msg) # Sending the command
         r.sleep()
 
-    #object collision is handled, to ensure that it does not bump into the environment        
+    #avoid objects by having the movements act differently if the laser detects something       
     def avoid(self, data):
         self.scan = np.nanmin(data.ranges)
             
