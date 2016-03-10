@@ -9,7 +9,8 @@ from sensor_msgs.msg import LaserScan
 from cv_bridge import CvBridge, CvBridgeError #conversion of ROS data to OpenCV format
 from geometry_msgs.msg import Twist
 
-
+class persistence:
+    roamdir = 1
 class main:
 
     def __init__(self):
@@ -47,10 +48,10 @@ class main:
         hsv_contours, hierachy = cv2.findContours(hsv_thresh.copy(),
                                                   cv2.RETR_TREE,
                                                   cv2.CHAIN_APPROX_SIMPLE)
-        for c in hsv_contours:
-            a = cv2.contourArea(c)
-            if a > 100.0:
-                cv2.drawContours(cv_image, c, -1, (255, 0, 0))
+        #for c in hsv_contours:
+            #a = cv2.contourArea(c)
+            #if a > 100.0:
+                #cv2.drawContours(cv_image, c, -1, (255, 0, 0))
         cv2.imshow("Camera Image", cv_image)
         segImg = cv2.bitwise_and(hsv_img,hsv_img,mask = hsv_thresh)
         imageleft, imageright = np.hsplit(segImg, 2)
@@ -71,24 +72,26 @@ class main:
                 #print("left>right")
                 twist_msg.linear.x = 0.1
                 twist_msg.angular.z = 0.1
+                persistence.roamdir = 1
             if (right > left):
                 #print("right>left")
                 twist_msg.linear.x = 0.1
                 twist_msg.angular.z = -0.1
+                persistence.roamdir = - 1
             if (right == 0 and left == 0):
                 #print("nothing found")
                 twist_msg.linear.x = 0.4
-                twist_msg.angular.z = 0.3
+                twist_msg.angular.z = 0.3 * persistence.roamdir
         else:
             if ((left + right) > 1.4):
                 twist_msg.linear.x = 0
                 twist_msg.angular.z = 0
-                print("arrived at love")
+                #print("arrived at love")
             else:
                 #print("avoided")
-                twist_msg.linear.x = -1;
+                twist_msg.linear.x = -0.5;
                 twist_msg.linear.y = 0;
-                twist_msg.angular.z = 2;
+                twist_msg.angular.z = 1.5 * - persistence.roamdir;
         self.pub.publish(twist_msg) # Sending the command
         r.sleep()
 
