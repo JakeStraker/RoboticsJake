@@ -1,12 +1,11 @@
 import cv2
 import numpy as np #matrix/image manipulation library
 import rospy as rp
-from cv2 import namedWindow
-from cv2 import destroyAllWindows, startWindowThread
-from numpy import mean
+from cv2 import destroyAllWindows, startWindowThread, namedWindow
+from numpy import mean #used in program
 from sensor_msgs.msg import Image, LaserScan
 from cv_bridge import CvBridge, CvBridgeError #bridging library for raw data to opencv
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Twist #movement commands
 
 class persistence:
     roamdir = 1
@@ -41,10 +40,10 @@ class main:
         #cv2.imshow("right", imageright) #debug images
         meanLeft = mean(imageleft)
         meanRight = mean(imageright)
-        self.send_velocities(meanLeft, meanRight)
+        self.updateMovements(meanLeft, meanRight)
 
             
-    def send_velocities(self, left, right):
+    def updateMovements(self, left, right):
         r = rp.Rate(20) #command rate
         #rp.loginfo("Sending commands")
         twist_msg = Twist()

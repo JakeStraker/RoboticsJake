@@ -43,10 +43,10 @@ class main:
         #cv2.imshow("right", imageright) #debug images
         meanLeft = mean(imageleft)
         meanRight = mean(imageright)
-        self.send_velocities(meanLeft, meanRight)
+        self.updateMovements(meanLeft, meanRight)
 
             
-    def send_velocities(self, left, right):
+    def updateMovements(self, left, right):
         r = rp.Rate(20) #set frequency of commands
         #rp.loginfo("Sending commands")
         twist_msg = Twist()
